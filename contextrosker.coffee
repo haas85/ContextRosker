@@ -45,5 +45,6 @@ window.CB = do ->
     ]
     updateAction: "APPEND"
 
+  config: config
   createContent: createContent
   sendData: sendData

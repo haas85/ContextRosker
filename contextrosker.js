@@ -84,6 +84,7 @@
       };
     };
     return {
+      config: config,
       createContent: createContent,
       sendData: sendData
     };
