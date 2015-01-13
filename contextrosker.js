@@ -9,11 +9,15 @@
     };
     config = function(data) {
       var key, _results;
-      _results = [];
-      for (key in data) {
-        _results.push(_configuration[key] = data[key]);
+      if (data != null) {
+        _results = [];
+        for (key in data) {
+          _results.push(_configuration[key] = data[key]);
+        }
+        return _results;
+      } else {
+        return _configuration;
       }
-      return _results;
     };
     createContent = function(topic, type, data) {
       var re;

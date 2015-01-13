@@ -3,8 +3,11 @@ window.CB = do ->
     cburl: "http://localhost:10101"
 
   config = (data) ->
-    for key of data
-      _configuration[key] = data[key]
+    if data?
+      for key of data
+        _configuration[key] = data[key]
+    else
+      _configuration
 
   createContent = (topic, type="NotYet", data)->
     data["firosstamp"] = new Date().getTime()
