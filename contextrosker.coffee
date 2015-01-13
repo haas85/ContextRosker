@@ -29,7 +29,6 @@ window.CB = do ->
         callback.call callback, data if callback?
       error: (jqXHR, textStatus, errorThrown ) ->
         callback.call callback if callback?
-    # console.log options.data
     return $.ajax options
 
   _generateDict = (contex_id, datatype, attributes=[]) ->
