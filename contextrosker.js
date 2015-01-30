@@ -1,9 +1,9 @@
-/* ContextRosker v1.0.1 - 13/01/2015
+/* ContextRosker v1.0.1 - 30/01/2015
    http://ikergune.com
    Copyright (c) 2015 Iñigo Gonzalez Vazquez <ingonza85@gmail.com> (@haas85) - Under MIT License */
 (function() {
   window.CB = (function() {
-    var config, createContent, sendData, _configuration, _generateDict;
+    var config, createContent, getAllRobots, getContext, sendData, _configuration, _generateDict;
     _configuration = {
       cburl: "http://localhost:10101"
     };
@@ -87,10 +87,52 @@
         updateAction: "APPEND"
       };
     };
+    getContext = function(options, callback) {
+      var query;
+      query = {
+        entities: [
+          {
+            id: options.id || ".*",
+            type: options.type || "ROBOT",
+            isPattern: options.pattern || "true"
+          }
+        ]
+      };
+      options = {
+        url: "" + _configuration.cburl + "/NGSI9/discoverContextAvailability",
+        method: "POST",
+        accepts: "application/json; charset=utf-8",
+        dataType: "json",
+        crossDomain: true,
+        data: query,
+        success: function(data) {
+          if (callback != null) {
+            return callback.call(callback, data);
+          }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          if (callback != null) {
+            return callback.call(callback);
+          }
+        }
+      };
+      return $.ajax(options);
+    };
+    getAllRobots = function(callback) {
+      var options;
+      options = {
+        id: ".*",
+        type: "ROBOT",
+        isPattern: "true"
+      };
+      return this.getContext(options, callback);
+    };
     return {
       config: config,
       createContent: createContent,
-      sendData: sendData
+      sendData: sendData,
+      getContext: getContext,
+      getAllRobots: getAllRobots
     };
   })();
 
