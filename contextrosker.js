@@ -1,12 +1,13 @@
-/* ContextRosker v1.0.1 - 30/01/2015
+/* ContextRosker v1.0.1 - 04/02/2015
    http://ikergune.com
    Copyright (c) 2015 Iñigo Gonzalez Vazquez <ingonza85@gmail.com> (@haas85) - Under MIT License */
 (function() {
   window.CB = (function() {
-    var config, createContent, getAllRobots, getContext, sendData, _configuration, _generateDict;
+    var SEPARATION_CHAR, config, createContent, getAllRobots, getContext, sendData, _configuration, _generateDict;
     _configuration = {
       cburl: "http://localhost:10101"
     };
+    SEPARATION_CHAR = "%27";
     config = function(data) {
       var key, _results;
       if (data != null) {
@@ -29,7 +30,7 @@
       return {
         name: topic,
         type: type,
-        value: JSON.stringify(data).replace(re, "'")
+        value: JSON.stringify(data).replace(re, SEPARATION_CHAR)
       };
     };
     sendData = function(contex_id, datatype, attributes, callback) {

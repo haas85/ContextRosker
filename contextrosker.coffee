@@ -2,6 +2,8 @@ window.CB = do ->
   _configuration =
     cburl: "http://localhost:10101"
 
+  SEPARATION_CHAR = "%27"
+
   config = (data) ->
     if data?
       for key of data
@@ -15,7 +17,7 @@ window.CB = do ->
 
     name    : topic
     type    : type
-    value   : JSON.stringify(data).replace re, "'"
+    value   : JSON.stringify(data).replace re, SEPARATION_CHAR
 
   sendData = (contex_id, datatype="ROBOT", attributes=[], callback)->
     options =
