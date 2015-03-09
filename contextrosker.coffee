@@ -19,21 +19,44 @@ window.CB = do ->
     type    : type
     value   : JSON.stringify(data).replace re, SEPARATION_CHAR
 
-  sendData = (contex_id, datatype="ROBOT", attributes=[], callback)->
+  parseValue = (value)->
+    re = new RegExp SEPARATION_CHAR, 'g'
+    return JSON.parse(value.replace re, '"')
+
+  sendData = (entity_id, datatype="ROBOT", attributes=[], callback)->
     options =
       url         : "#{_configuration.cburl}/NGSI10/updateContext"
       method      : "POST"
       accepts     : "application/json; charset=utf-8"
       dataType    : "json"
       crossDomain : true
-      data        : _generateDict(contex_id, datatype, attributes)
+      data        : _generateDict(entity_id, datatype, attributes)
       success: (data) ->
         callback.call callback, data if callback?
       error: (jqXHR, textStatus, errorThrown ) ->
         callback.call callback if callback?
     return $.ajax options
 
-  _generateDict = (contex_id, datatype, attributes=[]) ->
+  getData = (entity_id, datatype="ROBOT", isPattern, callback)->
+    options =
+      url         : "#{_configuration.cburl}/NGSI10/queryContext"
+      method      : "POST"
+      accepts     : "application/json; charset=utf-8"
+      dataType    : "json"
+      crossDomain : true
+      data        :
+        entities:[
+          type: datatype
+          isPattern: isPattern
+          id: entity_id
+        ]
+      success: (data) ->
+        callback.call callback, data if callback?
+      error: (jqXHR, textStatus, errorThrown ) ->
+        callback.call callback if callback?
+    return $.ajax options
+
+  _generateDict = (entity_id, datatype, attributes=[]) ->
     commands = []
     for attr in attributes
       commands.push attr.name
@@ -43,7 +66,7 @@ window.CB = do ->
       value   : commands
 
     contextElements: [
-      id          : contex_id
+      id          : entity_id
       type        : datatype
       isPattern   : "false"
       attributes  : attributes
@@ -81,6 +104,8 @@ window.CB = do ->
 
   config: config
   createContent: createContent
+  parseValue: parseValue
   sendData: sendData
+  getData: getData
   getContext: getContext
   getAllRobots: getAllRobots

@@ -1,9 +1,9 @@
-/* ContextRosker v1.0.1 - 04/02/2015
+/* ContextRosker v1.0.1 - 09/03/2015
    http://ikergune.com
    Copyright (c) 2015 Iñigo Gonzalez Vazquez <ingonza85@gmail.com> (@haas85) - Under MIT License */
 (function() {
   window.CB = (function() {
-    var SEPARATION_CHAR, config, createContent, getAllRobots, getContext, sendData, _configuration, _generateDict;
+    var SEPARATION_CHAR, config, createContent, getAllRobots, getContext, getData, parseValue, sendData, _configuration, _generateDict;
     _configuration = {
       cburl: "http://localhost:10101"
     };
@@ -33,7 +33,12 @@
         value: JSON.stringify(data).replace(re, SEPARATION_CHAR)
       };
     };
-    sendData = function(contex_id, datatype, attributes, callback) {
+    parseValue = function(value) {
+      var re;
+      re = new RegExp(SEPARATION_CHAR, 'g');
+      return JSON.parse(value.replace(re, '"'));
+    };
+    sendData = function(entity_id, datatype, attributes, callback) {
       var options;
       if (datatype == null) {
         datatype = "ROBOT";
@@ -47,7 +52,7 @@
         accepts: "application/json; charset=utf-8",
         dataType: "json",
         crossDomain: true,
-        data: _generateDict(contex_id, datatype, attributes),
+        data: _generateDict(entity_id, datatype, attributes),
         success: function(data) {
           if (callback != null) {
             return callback.call(callback, data);
@@ -61,7 +66,40 @@
       };
       return $.ajax(options);
     };
-    _generateDict = function(contex_id, datatype, attributes) {
+    getData = function(entity_id, datatype, isPattern, callback) {
+      var options;
+      if (datatype == null) {
+        datatype = "ROBOT";
+      }
+      options = {
+        url: "" + _configuration.cburl + "/NGSI10/queryContext",
+        method: "POST",
+        accepts: "application/json; charset=utf-8",
+        dataType: "json",
+        crossDomain: true,
+        data: {
+          entities: [
+            {
+              type: datatype,
+              isPattern: isPattern,
+              id: entity_id
+            }
+          ]
+        },
+        success: function(data) {
+          if (callback != null) {
+            return callback.call(callback, data);
+          }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          if (callback != null) {
+            return callback.call(callback);
+          }
+        }
+      };
+      return $.ajax(options);
+    };
+    _generateDict = function(entity_id, datatype, attributes) {
       var attr, commands, _i, _len;
       if (attributes == null) {
         attributes = [];
@@ -79,7 +117,7 @@
       return {
         contextElements: [
           {
-            id: contex_id,
+            id: entity_id,
             type: datatype,
             isPattern: "false",
             attributes: attributes
@@ -131,7 +169,9 @@
     return {
       config: config,
       createContent: createContent,
+      parseValue: parseValue,
       sendData: sendData,
+      getData: getData,
       getContext: getContext,
       getAllRobots: getAllRobots
     };
